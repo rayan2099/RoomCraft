@@ -1,0 +1,371 @@
+Build a single-page concept prototype called RoomCraft Concept Test.
+
+The goal is simple: prove whether uploading a real room photo, marking the usable floor area, and dragging furniture into the room feels intuitive and visually convincing.
+
+This is NOT a production app. No backend, no database, no auth, no AI APIs, no payments, no dashboards. Everything must run client-side only.
+
+Stack:
+React + TypeScript + Konva.js / react-konva.
+
+Core idea:
+Take a photo of your room. Mark the floor area like a document scanner frame. Enter the real room dimensions. Add furniture items. See the furniture footprint, item dimensions, and room dimensions clearly.
+
+Important UX inspiration:
+The floor-marking experience should be inspired by document scanner apps, like the way DocScan / mobile scanner apps let users adjust a detected document frame after taking a photo.
+
+Use that same mental model here, but for a room floor:
+
+- The user uploads a room photo
+- The app shows a four-corner adjustable frame
+- The user drags each corner to match the visible floor area
+- The frame feels like correcting a scanned document crop
+- The frame has clear corner handles, a shaded overlay, and a dashed outline
+- The user can easily confirm or readjust it
+
+Do not copy any specific app branding, icons, or exact UI. Only borrow the interaction pattern: a clean, draggable, four-point scanner-style frame.
+
+════════════════════════════════════
+APP STRUCTURE
+════════════════════════════════════
+
+The entire app should be one screen.
+
+Main sections:
+
+1. Room photo upload
+2. Floor frame / room dimension setup
+3. Furniture placement canvas
+4. Furniture catalog / custom item input
+
+No routing. No login. No backend.
+
+Use a simple 3-step flow shown clearly in the UI:
+
+1. Upload room photo
+2. Mark floor + enter room size
+3. Add furniture
+
+The user should always know what step they are in.
+
+════════════════════════════════════
+1. PHOTO UPLOAD
+════════════════════════════════════
+
+Create a simple upload area:
+
+- File input or drag-and-drop
+- accept="image/*"
+- Read the image locally using FileReader
+- Store the image in React state only
+- Display it immediately as the canvas background
+- Do not upload or save the image anywhere
+
+After upload, move the user directly into floor setup.
+
+Do not ask for room type, style, account, onboarding questions, or anything extra.
+
+════════════════════════════════════
+2. FLOOR FRAME INSPIRED BY DOCUMENT SCANNER APPS
+════════════════════════════════════
+
+After the room photo is uploaded, show a draggable floor frame inspired by document scanner apps. Instead of detecting a paper document, the user is marking the visible floor area of the room. The experience should feel familiar: like adjusting the corners of a scanned document before saving it.
+
+The frame should behave like a scanner crop frame:
+
+- Four draggable corner points
+- Semi-transparent polygon overlay
+- Gold dashed outline
+- Clear corner handles
+- User can drag corners to match the visible floor area
+- This floor frame represents the real usable floor space
+
+Important:
+Do NOT use this floor frame for furniture items. This frame is only for the room/floor.
+
+Add a clear step title:
+
+"Mark your floor area"
+
+Add short helper text:
+
+"Drag the corners to match the floor area in your room photo."
+
+Room dimension input:
+
+Ask the user to enter the real dimensions of the marked floor area:
+
+- Room width
+- Room depth
+- Optional room height
+- Unit selector: cm, m, inches, feet
+
+Example:
+Width: 4.5 m
+Depth: 3.2 m
+Height: 2.7 m
+
+Show the selected unit everywhere.
+
+Once dimensions are entered, display dimension labels directly on the floor frame:
+
+- Width label on the front/back floor edge
+- Depth label on the side floor edge
+- Optional room height shown as a small vertical ruler on the side
+
+Add buttons:
+
+- Confirm floor
+- Redraw / adjust floor
+- Skip floor setup and place freely
+
+After confirming, move into furniture placement mode.
+
+════════════════════════════════════
+3. FURNITURE CATALOG
+════════════════════════════════════
+
+Hardcode around 10 furniture items directly in code.
+
+Example categories:
+
+- Sofas
+- Chairs
+- Tables
+- Rugs
+- Lighting
+- Storage
+- Decor
+
+Each furniture item should include:
+
+- id
+- name
+- category
+- width
+- depth
+- height
+- unit
+- imageUrl
+- price optional
+
+Use simple public image URLs or local placeholder assets. Clean-ish backgrounds are fine. Do not over-engineer background removal.
+
+Display furniture in a horizontal bottom strip or right sidebar.
+
+Each item card should show:
+
+- Thumbnail
+- Name
+- Width x Depth x Height
+- Add button
+
+Example data structure:
+
+const FURNITURE = [
+  {
+    id: "1",
+    name: "Modern Sofa",
+    category: "sofa",
+    width: 220,
+    depth: 95,
+    height: 70,
+    unit: "cm",
+    imageUrl: "...",
+    price: 1200
+  },
+  {
+    id: "2",
+    name: "Accent Chair",
+    category: "chair",
+    width: 80,
+    depth: 75,
+    height: 85,
+    unit: "cm",
+    imageUrl: "...",
+    price: 450
+  }
+];
+
+════════════════════════════════════
+4. CUSTOM ITEM DIMENSIONS
+════════════════════════════════════
+
+Add a custom item form so the user can enter the dimensions of the item they want to place.
+
+Fields:
+
+- Item name
+- Width
+- Depth
+- Height
+- Unit selector
+- Optional image upload for the item
+- Add to room button
+
+Important:
+The item crop/measurement frame belongs to the furniture item after it is added to the canvas, not to the room setup.
+
+When a custom item is added, create a furniture object on the canvas with its footprint and height visualization.
+
+════════════════════════════════════
+5. FURNITURE PLACEMENT CANVAS
+════════════════════════════════════
+
+After the floor is confirmed, the user should be able to add furniture onto the room photo.
+
+Each placed furniture item should have:
+
+- Draggable image
+- Rotation handle or rotate buttons
+- Scale controls
+- Delete button
+- Bring forward / send backward optional
+- Dimension overlay
+
+For each placed item, show a dedicated item footprint frame:
+
+- Blue dashed rectangle on the floor
+- The rectangle represents width x depth
+- Dimension labels on the rectangle edges
+- Green vertical height indicator next to the item
+- Height label beside the green line
+
+Example labels:
+
+Width: 220 cm
+Depth: 95 cm
+Height: 70 cm
+
+The user should always understand two things:
+
+1. Room dimensions
+2. Item dimensions
+
+The room dimensions should stay connected to the gold floor frame.
+The item dimensions should stay connected to each placed furniture item.
+
+Do not confuse the two.
+
+Important visual rule:
+
+- Gold frame = room/floor dimensions
+- Blue frame = furniture item footprint
+- Green line = furniture item height
+
+════════════════════════════════════
+6. UNIT HANDLING
+════════════════════════════════════
+
+Allow the user to choose preferred units:
+
+- cm
+- m
+- inches
+- feet
+
+All visible labels should update based on the selected unit.
+
+This applies to:
+
+- Room width
+- Room depth
+- Room height
+- Furniture width
+- Furniture depth
+- Furniture height
+- Custom item dimensions
+
+Use simple conversion logic.
+
+════════════════════════════════════
+7. UX/UI REQUIREMENTS
+════════════════════════════════════
+
+Make the interface very clear and not confusing.
+
+Use clear buttons:
+
+- Upload photo
+- Confirm floor
+- Adjust floor
+- Add furniture
+- Add custom item
+- Delete item
+- Rotate
+- Reset
+
+Avoid too many panels at once.
+
+Use a clean layout.
+
+Desktop:
+
+- Canvas large in center
+- Furniture/catalog panel on the right
+- Step controls at the top
+
+Mobile:
+
+- Canvas on top
+- Furniture strip at bottom
+- Controls in collapsible panels if needed
+
+Style:
+
+- Modern, clean, minimal
+- Gold for room/floor frame
+- Blue for item footprint
+- Green for height indicator
+- White labels with dark background pills for readability
+- Clear spacing
+- Large enough controls to drag easily
+- No clutter
+
+The app should feel like a practical tool, not a marketing website.
+
+════════════════════════════════════
+8. IMPORTANT BEHAVIOR
+════════════════════════════════════
+
+The floor frame is for the room only.
+
+The blue crop/footprint frame is for furniture items only.
+
+Room dimensions should be entered once after marking the floor.
+
+Furniture dimensions should come from the catalog item or custom item form.
+
+If the user changes the preferred unit, all labels should update.
+
+If no floor is confirmed, allow free placement but hide room dimension labels.
+
+Do not add backend logic.
+Do not add Supabase.
+Do not add Stripe.
+Do not add accounts.
+Do not add dashboards.
+Do not add AI scene analysis.
+Do not add ecommerce.
+Do not add product checkout.
+Do not add store management.
+
+════════════════════════════════════
+9. ACCEPTANCE CRITERIA
+════════════════════════════════════
+
+The prototype is successful if:
+
+- I can upload a room photo
+- I can adjust a document-scanner-style floor frame
+- I can enter real room dimensions
+- I can see room dimensions on the floor frame
+- I can add furniture to the room
+- Each furniture item shows its own width, depth, and height
+- Each furniture item has its own blue footprint frame
+- Height is shown with a green vertical indicator
+- I can add a custom item with my own dimensions
+- I can choose my preferred unit
+- The app feels simple and understandable
+- The room frame and item frame are visually different and not confusing
+
+Build this as a fast validation prototype. Prioritize the core interaction over production polish.
